@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Venezia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ PANTALLA 1: LOGIN ============ -->
+  <main id="login-screen" class="screen active">
+    <h1 id="message" class="message"></h1>
+
+    <div class="pin-display" id="pin-display" aria-live="polite"></div>
+    <p class="pin-error" id="pin-error" role="alert"></p>
+
+    <div class="keypad" id="keypad">
+      <button type="button" data-key="1">1</button>
+      <button type="button" data-key="2">2</button>
+      <button type="button" data-key="3">3</button>
+      <button type="button" data-key="4">4</button>
+      <button type="button" data-key="5">5</button>
+      <button type="button" data-key="6">6</button>
+      <button type="button" data-key="7">7</button>
+      <button type="button" data-key="8">8</button>
+      <button type="button" data-key="9">9</button>
+      <button type="button" data-key="clear" class="aux" aria-label="Borrar todo">C</button>
+      <button type="button" data-key="0">0</button>
+      <button type="button" data-key="back" class="aux" aria-label="Borrar último dígito">⌫</button>
+    </div>
+  </main>
+
+  <!-- ============ PANTALLA 2: SOL + AUDIO ============ -->
+  <main id="sun-screen" class="screen">
+    <div class="sun" aria-hidden="true">
+      <div class="rays"></div>
+      <div class="rays rays-2"></div>
+      <div class="glow"></div>
+      <div class="core"></div>
+    </div>
+
+    <section class="player" aria-label="Reproductor de audio">
+      <audio id="audio" preload="auto"></audio>
+
+      <p class="audio-error" id="audio-error" hidden></p>
+
+      <div class="progress-row">
+        <span id="time-current">0:00</span>
+        <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Progreso" />
+        <span id="time-total">0:00</span>
+      </div>
+
+      <div class="controls">
+        <button type="button" id="play-btn" class="play" aria-label="Pausar">
+          <svg id="icon-pause" viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          <svg id="icon-play" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" hidden><path d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <div class="volume">
+          <button type="button" id="mute-btn" aria-label="Silenciar">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          </button>
+          <input type="range" id="volume" min="0" max="1" step="0.01" aria-label="Volumen" />
+          <span id="volume-value">70%</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

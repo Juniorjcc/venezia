@@ -1,0 +1,8 @@
+CARGA AQUÍ TU ARCHIVO DE AUDIO
+==============================
+
+Copia tu archivo .mp3 en esta carpeta y nómbralo:
+
+    musica.mp3
+
+Si prefieres otro nombre, cámbialo en config.js (campo "audioFile").
