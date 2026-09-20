@@ -8,65 +8,156 @@
 </head>
 <body>
 
-  <!-- ============ PANTALLA 1: LOGIN ============ -->
-  <main id="login-screen" class="screen active">
-    <h1 id="message" class="message"></h1>
+  <!-- ============ ESCENA (siempre montada: no se re-renderiza al iniciar sesión) ============ -->
+  <div id="scene" class="scene" data-rate aria-hidden="true">
+    <div class="sky"></div>
 
-    <div class="pin-display" id="pin-display" aria-live="polite"></div>
-    <p class="pin-error" id="pin-error" role="alert"></p>
-
-    <div class="keypad" id="keypad">
-      <button type="button" data-key="1">1</button>
-      <button type="button" data-key="2">2</button>
-      <button type="button" data-key="3">3</button>
-      <button type="button" data-key="4">4</button>
-      <button type="button" data-key="5">5</button>
-      <button type="button" data-key="6">6</button>
-      <button type="button" data-key="7">7</button>
-      <button type="button" data-key="8">8</button>
-      <button type="button" data-key="9">9</button>
-      <button type="button" data-key="clear" class="aux" aria-label="Borrar todo">C</button>
-      <button type="button" data-key="0">0</button>
-      <button type="button" data-key="back" class="aux" aria-label="Borrar último dígito">⌫</button>
-    </div>
-  </main>
-
-  <!-- ============ PANTALLA 2: SOL + AUDIO ============ -->
-  <main id="sun-screen" class="screen">
-    <div class="sun" aria-hidden="true">
+    <div class="sun">
       <div class="rays"></div>
       <div class="rays rays-2"></div>
       <div class="glow"></div>
       <div class="core"></div>
     </div>
 
-    <section class="player" aria-label="Reproductor de audio">
-      <audio id="audio" preload="auto"></audio>
+    <div class="layer clouds"></div>
+    <div class="layer mountains"></div>
+    <div class="layer hills"></div>
+    <div class="layer trees"></div>
+    <div class="layer road"></div>
 
-      <p class="audio-error" id="audio-error" hidden></p>
-
-      <div class="progress-row">
-        <span id="time-current">0:00</span>
-        <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Progreso" />
-        <span id="time-total">0:00</span>
-      </div>
-
-      <div class="controls">
-        <button type="button" id="play-btn" class="play" aria-label="Pausar">
-          <svg id="icon-pause" viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-          <svg id="icon-play" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" hidden><path d="M8 5v14l11-7z"/></svg>
-        </button>
-
-        <div class="volume">
-          <button type="button" id="mute-btn" aria-label="Silenciar">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
-          </button>
-          <input type="range" id="volume" min="0" max="1" step="0.01" aria-label="Volumen" />
-          <span id="volume-value">70%</span>
+    <div class="bike">
+      <div class="bike-enter">
+        <div class="bike-bob">
+<svg class="bike-svg" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bicicleta de ruta en movimiento">
+<ellipse cx="200" cy="234" rx="160" ry="4.5" fill="#000" opacity=".32"/>
+<g transform="translate(90 160)"><g class="spin">
+<circle r="70" fill="none" stroke="#17181c" stroke-width="7"/>
+<circle r="70" fill="none" stroke="#3a3d45" stroke-width="1.2" stroke-dasharray="3 5" transform="rotate(4)"/>
+<circle r="64" fill="none" stroke="#c9ced6" stroke-width="3.2"/>
+<circle r="62.2" fill="none" stroke="#7d838d" stroke-width="1"/>
+<g stroke="#b8bdc6" stroke-width=".9"><line x1="7.0" y1="0.0" x2="58.5" y2="-20.7"/><line x1="6.8" y1="1.8" x2="51.1" y2="35.1"/><line x1="6.1" y1="3.5" x2="61.0" y2="11.3"/><line x1="4.9" y1="4.9" x2="26.7" y2="56.0"/><line x1="3.5" y1="6.1" x2="47.1" y2="40.3"/><line x1="1.8" y1="6.8" x2="-4.8" y2="61.8"/><line x1="0.0" y1="7.0" x2="20.7" y2="58.5"/><line x1="-1.8" y1="6.8" x2="-35.1" y2="51.1"/><line x1="-3.5" y1="6.1" x2="-11.3" y2="61.0"/><line x1="-4.9" y1="4.9" x2="-56.0" y2="26.7"/><line x1="-6.1" y1="3.5" x2="-40.3" y2="47.1"/><line x1="-6.8" y1="1.8" x2="-61.8" y2="-4.8"/><line x1="-7.0" y1="0.0" x2="-58.5" y2="20.7"/><line x1="-6.8" y1="-1.8" x2="-51.1" y2="-35.1"/><line x1="-6.1" y1="-3.5" x2="-61.0" y2="-11.3"/><line x1="-4.9" y1="-4.9" x2="-26.7" y2="-56.0"/><line x1="-3.5" y1="-6.1" x2="-47.1" y2="-40.3"/><line x1="-1.8" y1="-6.8" x2="4.8" y2="-61.8"/><line x1="-0.0" y1="-7.0" x2="-20.7" y2="-58.5"/><line x1="1.8" y1="-6.8" x2="35.1" y2="-51.1"/><line x1="3.5" y1="-6.1" x2="11.3" y2="-61.0"/><line x1="4.9" y1="-4.9" x2="56.0" y2="-26.7"/><line x1="6.1" y1="-3.5" x2="40.3" y2="-47.1"/><line x1="6.8" y1="-1.8" x2="61.8" y2="4.8"/></g>
+<circle r="14" fill="none" stroke="#7b818b" stroke-width="3"/><circle r="9" fill="none" stroke="#a4aab3" stroke-width="2"/>
+<circle r="6" fill="#9aa0a9"/><circle r="2.6" fill="#22252b"/>
+<rect x="-1.4" y="-66" width="2.8" height="6" fill="#e8353a"/>
+</g></g>
+<g transform="translate(310 160)"><g class="spin">
+<circle r="70" fill="none" stroke="#17181c" stroke-width="7"/>
+<circle r="70" fill="none" stroke="#3a3d45" stroke-width="1.2" stroke-dasharray="3 5" transform="rotate(4)"/>
+<circle r="64" fill="none" stroke="#c9ced6" stroke-width="3.2"/>
+<circle r="62.2" fill="none" stroke="#7d838d" stroke-width="1"/>
+<g stroke="#b8bdc6" stroke-width=".9"><line x1="7.0" y1="0.0" x2="58.5" y2="-20.7"/><line x1="6.8" y1="1.8" x2="51.1" y2="35.1"/><line x1="6.1" y1="3.5" x2="61.0" y2="11.3"/><line x1="4.9" y1="4.9" x2="26.7" y2="56.0"/><line x1="3.5" y1="6.1" x2="47.1" y2="40.3"/><line x1="1.8" y1="6.8" x2="-4.8" y2="61.8"/><line x1="0.0" y1="7.0" x2="20.7" y2="58.5"/><line x1="-1.8" y1="6.8" x2="-35.1" y2="51.1"/><line x1="-3.5" y1="6.1" x2="-11.3" y2="61.0"/><line x1="-4.9" y1="4.9" x2="-56.0" y2="26.7"/><line x1="-6.1" y1="3.5" x2="-40.3" y2="47.1"/><line x1="-6.8" y1="1.8" x2="-61.8" y2="-4.8"/><line x1="-7.0" y1="0.0" x2="-58.5" y2="20.7"/><line x1="-6.8" y1="-1.8" x2="-51.1" y2="-35.1"/><line x1="-6.1" y1="-3.5" x2="-61.0" y2="-11.3"/><line x1="-4.9" y1="-4.9" x2="-26.7" y2="-56.0"/><line x1="-3.5" y1="-6.1" x2="-47.1" y2="-40.3"/><line x1="-1.8" y1="-6.8" x2="4.8" y2="-61.8"/><line x1="-0.0" y1="-7.0" x2="-20.7" y2="-58.5"/><line x1="1.8" y1="-6.8" x2="35.1" y2="-51.1"/><line x1="3.5" y1="-6.1" x2="11.3" y2="-61.0"/><line x1="4.9" y1="-4.9" x2="56.0" y2="-26.7"/><line x1="6.1" y1="-3.5" x2="40.3" y2="-47.1"/><line x1="6.8" y1="-1.8" x2="61.8" y2="4.8"/></g>
+<circle r="11" fill="#20232a"/>
+<circle r="6" fill="#9aa0a9"/><circle r="2.6" fill="#22252b"/>
+<rect x="-1.4" y="-66" width="2.8" height="6" fill="#e8353a"/>
+</g></g>
+<g class="crank" transform="translate(190 168)"><g class="crank-spin">
+<line x1="0" y1="0" x2="0" y2="-30" stroke="#5d626b" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(0 -30)"><rect class="pedal" x="-12" y="-3" width="24" height="6" rx="2" fill="#23252b"/></g>
+</g></g>
+<g fill="none" stroke="#3b3d44" stroke-width="2.4" stroke-dasharray="3 2" class="chain">
+<path d="M190 151 L90 147"/><path d="M190 185 L90 173"/></g>
+<!-- cuadro -->
+<line x1="190" y1="168" x2="90" y2="160" stroke="#d4202f" stroke-width="5.5" stroke-linecap="round"/>
+<line x1="165" y1="92" x2="90" y2="160" stroke="#d4202f" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="190" y1="168" x2="163" y2="84" stroke="#d4202f" stroke-width="7.5" stroke-linecap="round"/>
+<line x1="190" y1="165.9" x2="163" y2="81.9" stroke="#ff6b73" stroke-width="2.1" stroke-linecap="round" opacity=".7"/>
+<line x1="163" y1="88" x2="272" y2="84" stroke="#d4202f" stroke-width="8" stroke-linecap="round"/>
+<line x1="163" y1="85.8" x2="272" y2="81.8" stroke="#ff6b73" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+<line x1="190" y1="168" x2="280" y2="98" stroke="#d4202f" stroke-width="10" stroke-linecap="round"/>
+<line x1="190" y1="165.2" x2="280" y2="95.2" stroke="#ff6b73" stroke-width="2.8" stroke-linecap="round" opacity=".7"/>
+<line x1="272" y1="80" x2="283" y2="102" stroke="#8f1420" stroke-width="9" stroke-linecap="round"/>
+<path d="M283 102 Q297 133 310 160" fill="none" stroke="#1b1c21" stroke-width="6" stroke-linecap="round"/>
+<circle cx="310" cy="160" r="4" fill="#1b1c21"/><circle cx="90" cy="160" r="4" fill="#1b1c21"/>
+<!-- bidón -->
+<g transform="translate(218 130) rotate(33)"><rect x="-6" y="-13" width="12" height="26" rx="3.5" fill="#f4f4f6"/><rect x="-6" y="-3" width="12" height="7" fill="#1e2a78"/></g>
+<!-- sillín y tija -->
+<line x1="163" y1="84" x2="160" y2="70" stroke="#1b1c21" stroke-width="4" stroke-linecap="round"/>
+<path d="M139 67 Q150 62 178 65 Q184 67 179 71 Q152 75 139 71 Z" fill="#1b1c21"/>
+<!-- potencia y manillar -->
+<line x1="272" y1="80" x2="267" y2="69" stroke="#1b1c21" stroke-width="5" stroke-linecap="round"/>
+<line x1="267" y1="68" x2="283" y2="65" stroke="#1b1c21" stroke-width="6" stroke-linecap="round"/>
+<path d="M283 65 C301 62 314 69 316 84 C318 98 309 108 296 108" fill="none" stroke="#1b1c21" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M303 63 C309 63 314 68 316 78" fill="none" stroke="#2e3038" stroke-width="7" stroke-linecap="round"/>
+<line x1="308" y1="82" x2="303" y2="95" stroke="#b4b8c0" stroke-width="1.5"/>
+<!-- plato -->
+<g transform="translate(190 168)"><g class="crank-spin"><circle r="17" fill="none" stroke="#2c2e35" stroke-width="3.2"/><circle r="11" fill="none" stroke="#5d626b" stroke-width="1.2"/><circle r="4" fill="#9aa0a9"/></g></g>
+<g class="crank" transform="translate(190 168)"><g class="crank-spin">
+<line x1="0" y1="0" x2="0" y2="30" stroke="#a3a9b3" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(0 30)"><rect class="pedal" x="-12" y="-3" width="24" height="6" rx="2" fill="#23252b"/></g>
+</g></g>
+</svg>
         </div>
       </div>
-    </section>
+    </div>
+
+    <div class="tint"></div>
+  </div>
+
+  <!-- ============ LOGIN ============ -->
+  <main id="login-screen" class="login">
+    <div class="login-card">
+      <svg class="emblem" data-rate viewBox="-36 -36 72 72" aria-hidden="true">
+        <g class="emblem-spin">
+          <circle r="30" fill="none" stroke="currentColor" stroke-width="4"/>
+          <circle r="24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".6"/>
+          <g stroke="currentColor" stroke-width="1.6" opacity=".9">
+            <line x1="0" y1="-24" x2="0" y2="24"/><line x1="-24" y1="0" x2="24" y2="0"/>
+            <line x1="-17" y1="-17" x2="17" y2="17"/><line x1="17" y1="-17" x2="-17" y2="17"/>
+          </g>
+          <circle r="4.5" fill="currentColor"/>
+        </g>
+      </svg>
+      <p class="kicker">Venezia</p>
+      <h1 id="message" class="message"></h1>
+      <p class="hint">Ingresa tu código para empezar a rodar</p>
+
+      <div class="pin-display" id="pin-display" aria-live="polite"></div>
+      <p class="pin-error" id="pin-error" role="alert"></p>
+
+      <div class="keypad" id="keypad">
+        <button type="button" data-key="1">1</button>
+        <button type="button" data-key="2">2</button>
+        <button type="button" data-key="3">3</button>
+        <button type="button" data-key="4">4</button>
+        <button type="button" data-key="5">5</button>
+        <button type="button" data-key="6">6</button>
+        <button type="button" data-key="7">7</button>
+        <button type="button" data-key="8">8</button>
+        <button type="button" data-key="9">9</button>
+        <button type="button" data-key="clear" class="aux" aria-label="Borrar todo">C</button>
+        <button type="button" data-key="0">0</button>
+        <button type="button" data-key="back" class="aux" aria-label="Borrar último dígito">⌫</button>
+      </div>
+    </div>
   </main>
+
+  <!-- ============ AUDIO Y REPRODUCTOR (fuera de las pantallas: nunca se recrea) ============ -->
+  <audio id="audio" preload="auto"></audio>
+
+  <section id="player" class="player" aria-label="Reproductor de audio">
+    <p class="audio-error" id="audio-error" hidden></p>
+
+    <div class="progress-row">
+      <span id="time-current">0:00</span>
+      <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Progreso" />
+      <span id="time-total">0:00</span>
+    </div>
+
+    <div class="controls">
+      <button type="button" id="play-btn" class="play" aria-label="Pausar">
+        <svg id="icon-pause" viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        <svg id="icon-play" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" hidden><path d="M8 5v14l11-7z"/></svg>
+      </button>
+
+      <div class="volume">
+        <button type="button" id="mute-btn" aria-label="Silenciar">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+        </button>
+        <input type="range" id="volume" min="0" max="1" step="0.01" aria-label="Volumen" />
+        <span id="volume-value">70%</span>
+      </div>
+    </div>
+  </section>
 
   <script src="config.js"></script>
   <script src="app.js"></script>
