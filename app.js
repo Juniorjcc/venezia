@@ -189,4 +189,201 @@
     audioError.hidden = false;
     setPlayingUI(false);
   });
+
+  // ---------- Lluvia de girasoles ----------
+  // Los pétalos caen con una inclinación hacia atrás proporcional a la velocidad
+  // actual de la escena (`rate`), y los más cercanos (z alto) se mueven más rápido
+  // que los lejanos para dar paralaje.
+  const canvas = $("petals");
+  const ctx = canvas.getContext("2d");
+  const rootStyle = getComputedStyle(document.documentElement);
+  const roadSpeed = 1600 / (parseFloat(rootStyle.getPropertyValue("--road-t")) || 5); // px/s a rate = 1
+  const WIND = 0.62; // fracción de la velocidad del camino que empuja a un pétalo cercano
+  let cw = 0;
+  let ch = 0;
+  let particles = [];
+  let petalsOn = false;
+  let intensity = 0;
+  let petalRaf = 0;
+  let lastT = 0;
+
+  function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cw = window.innerWidth;
+    ch = window.innerHeight;
+    canvas.width = cw * dpr;
+    canvas.height = ch * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", () => {
+    resizeCanvas();
+    particles.forEach((p) => respawn(p, true)); // reparte los pétalos según el nuevo tamaño
+  });
+  resizeCanvas();
+
+  function sprite(draw) {
+    const c = document.createElement("canvas");
+    c.width = c.height = 64;
+    const g = c.getContext("2d");
+    g.translate(32, 32);
+    draw(g);
+    return c;
+  }
+
+  function petalPath(g, len, w) {
+    g.beginPath();
+    g.moveTo(0, len);
+    g.bezierCurveTo(w, len * 0.5, w * 0.9, -len * 0.5, 0, -len);
+    g.bezierCurveTo(-w * 0.9, -len * 0.5, -w, len * 0.5, 0, len);
+  }
+
+  const petalSprites = [["#ffd23a", "#f2a20c"], ["#ffc21a", "#e88a00"], ["#ffe066", "#f5b50a"]].map(([a, b]) =>
+    sprite((g) => {
+      const grad = g.createLinearGradient(0, -28, 0, 28);
+      grad.addColorStop(0, a);
+      grad.addColorStop(1, b);
+      g.fillStyle = grad;
+      petalPath(g, 28, 17);
+      g.fill();
+      g.strokeStyle = "rgba(255,255,255,0.4)";
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.moveTo(0, 22);
+      g.lineTo(0, -18);
+      g.stroke();
+    })
+  );
+
+  const flowerSprite = sprite((g) => {
+    for (let i = 0; i < 14; i++) {
+      g.save();
+      g.rotate((i * Math.PI * 2) / 14);
+      g.fillStyle = i % 2 ? "#ffc81f" : "#f0a30a";
+      g.beginPath();
+      g.ellipse(0, -20, 5.2, 11.5, 0, 0, Math.PI * 2);
+      g.fill();
+      g.restore();
+    }
+    g.fillStyle = "#5a3510";
+    g.beginPath();
+    g.arc(0, 0, 11, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = "#b98240";
+    for (let i = 1; i < 26; i++) {
+      const r = 1.9 * Math.sqrt(i);
+      const a = i * 2.39996;
+      g.beginPath();
+      g.arc(r * Math.cos(a), r * Math.sin(a), 0.9, 0, Math.PI * 2);
+      g.fill();
+    }
+  });
+
+  function respawn(p, initial) {
+    const drift = Math.max(0, -WIND * roadSpeed * rate) * (ch / 70); // lo que se desplaza hacia atrás mientras cae
+    p.z = 0.35 + Math.random() * 0.65;
+    p.flower = Math.random() < 0.4;
+    p.sprite = p.flower ? flowerSprite : petalSprites[(Math.random() * petalSprites.length) | 0];
+    p.size = (10 + 24 * p.z) * (p.flower ? 1.25 : 1);
+    p.x = -30 + Math.random() * (cw + Math.min(drift, cw * 1.5) + 60);
+    p.y = initial ? -ch * 0.4 + Math.random() * ch : -40 - Math.random() * 80;
+    p.vx = 0;
+    p.vy = 38 + 95 * p.z + Math.random() * 25;
+    p.rot = Math.random() * Math.PI * 2;
+    p.vr = (Math.random() - 0.5) * 3;
+    p.phase = Math.random() * Math.PI * 2;
+    p.flip = 1.5 + Math.random() * 2.5;
+    // la carretera ocupa los ~118px inferiores: los pétalos lejanos aterrizan arriba, los cercanos abajo
+    p.ground = ch - (118 - ((p.z - 0.35) / 0.65) * 94) + (Math.random() - 0.5) * 10;
+    p.landed = false;
+    p.life = 0;
+  }
+
+  function petalFrame(now) {
+    const dt = Math.min((now - lastT) / 1000 || 0.016, 0.05);
+    lastT = now;
+    intensity += ((petalsOn ? 1 : 0) - intensity) * Math.min(1, dt * 2.5);
+    ctx.clearRect(0, 0, cw, ch);
+
+    const wind = -WIND * roadSpeed * rate; // negativo: hacia atrás
+    const t = now / 1000;
+
+    for (const p of particles) {
+      if (p.landed) {
+        // sobre el asfalto: se va con el camino y se desvanece
+        p.x -= roadSpeed * rate * (0.55 + 0.45 * p.z) * dt;
+        p.life -= dt;
+        if (p.life <= 0 || p.x < -60) respawn(p, false);
+      } else {
+        p.vx += (wind * p.z + Math.sin(t * 1.6 + p.phase) * 14 - p.vx) * Math.min(1, dt * 3);
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.rot += p.vr * dt;
+        if (p.y >= p.ground) {
+          p.landed = true;
+          p.life = 1.6;
+          p.y = p.ground;
+        } else if (p.x < -60) {
+          respawn(p, false);
+        }
+      }
+
+      const fade = p.landed ? Math.min(1, p.life / 0.9) : 1;
+      const alpha = intensity * fade * (0.6 + 0.4 * p.z);
+      if (alpha < 0.01) continue;
+      // el giro en 3D del pétalo se simula aplastándolo en un eje
+      const squash = p.landed ? 0.32 : 0.35 + 0.65 * Math.abs(Math.cos(t * p.flip + p.phase));
+      ctx.globalAlpha = alpha;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      // el pétalo se alinea con su trayectoria (más inclinado cuanto más rápido se avanza)
+      ctx.rotate(p.landed ? p.rot : Math.atan2(-p.vx, p.vy) + Math.sin(p.rot) * 0.6);
+      ctx.scale(1, squash);
+      ctx.drawImage(p.sprite, -p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+
+    if (!petalsOn && intensity < 0.01) {
+      particles = [];
+      ctx.clearRect(0, 0, cw, ch);
+      petalRaf = 0;
+      return;
+    }
+    petalRaf = requestAnimationFrame(petalFrame);
+  }
+
+  function setPetals(on) {
+    petalsOn = on;
+    if (on && !particles.length) {
+      resizeCanvas(); // por si el tamaño de la ventana cambió o aún no estaba disponible al cargar
+      const n = Math.round(Math.min(90, Math.max(36, cw / 16)));
+      particles = Array.from({ length: n }, () => {
+        const p = {};
+        respawn(p, true);
+        return p;
+      });
+    }
+    if (!petalRaf) {
+      lastT = performance.now();
+      petalRaf = requestAnimationFrame(petalFrame);
+    }
+  }
+
+  // ---------- Cambio de tema: Modo Girasol ----------
+  // Solo cambia una clase del <body> (y los pétalos); el <audio> no se toca.
+  const skinBtn = $("skin-btn");
+  const bikeEl = document.querySelector(".bike");
+
+  skinBtn.addEventListener("click", () => {
+    const on = document.body.classList.toggle("sunflower");
+    skinBtn.setAttribute("aria-pressed", String(on));
+    skinBtn.setAttribute("aria-label", on ? "Volver al modo normal" : "Activar modo girasol");
+    bikeEl.classList.remove("morph");
+    void bikeEl.offsetWidth;
+    bikeEl.classList.add("morph");
+    setPetals(on);
+  });
+  bikeEl.addEventListener("animationend", (e) => {
+    if (e.animationName === "morph") bikeEl.classList.remove("morph");
+  });
 })();
