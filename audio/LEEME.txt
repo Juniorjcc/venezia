@@ -1,8 +1,9 @@
 CARGA AQUÍ TU ARCHIVO DE AUDIO
 ==============================
 
-Copia tu archivo .mp3 en esta carpeta y nómbralo:
+Copia tus archivos .mp3 en esta carpeta y nómbralos:
 
-    musica.mp3
+    musica.mp3   (primera canción)
+    musica2.mp3  (segunda canción)
 
-Si prefieres otro nombre, cámbialo en config.js (campo "audioFile").
+Si prefieres otros nombres o más canciones, edita la lista en config.js (campo "audioFiles").

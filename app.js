@@ -113,11 +113,14 @@
   }
 
   // ---------- Audio ----------
-  // El <audio> vive fuera de las pantallas y nunca se recrea ni se le reasigna la
-  // fuente: el cambio de pantalla solo añade una clase al <body>, así la canción
-  // no se interrumpe ni se reinicia.
+  // El <audio> vive fuera de las pantallas y nunca se recrea: el cambio de pantalla
+  // solo añade una clase al <body>, así la canción no se interrumpe ni se reinicia.
+  // La fuente solo cambia al pasar de canción con "siguiente".
   const audio = $("audio");
   const playBtn = $("play-btn");
+  const nextBtn = $("next-btn");
+  const tracks = cfg.audioFiles;
+  let trackIndex = 0;
   const iconPlay = $("icon-play");
   const iconPause = $("icon-pause");
   const seek = $("seek");
@@ -145,7 +148,7 @@
   function startAudio() {
     if (audioStarted) return;
     audioStarted = true;
-    audio.src = cfg.audioFile;
+    audio.src = tracks[trackIndex];
     audio.volume = cfg.initialVolume;
     volume.value = cfg.initialVolume;
     volumeValue.textContent = Math.round(cfg.initialVolume * 100) + "%";
@@ -158,9 +161,20 @@
     else audio.pause();
   });
 
+  function nextTrack() {
+    trackIndex = (trackIndex + 1) % tracks.length;
+    audioError.hidden = true;
+    seek.value = 0;
+    timeCurrent.textContent = fmt(0);
+    audio.src = tracks[trackIndex];
+    audio.play().catch(() => setPlayingUI(false));
+  }
+
+  nextBtn.addEventListener("click", nextTrack);
+
   audio.addEventListener("play", () => setPlayingUI(!audio.error));
   audio.addEventListener("pause", () => setPlayingUI(false));
-  audio.addEventListener("ended", () => setPlayingUI(false));
+  audio.addEventListener("ended", nextTrack); // al terminar, sigue con la siguiente
 
   audio.addEventListener("loadedmetadata", () => {
     audioError.hidden = true;
@@ -185,7 +199,7 @@
   });
 
   audio.addEventListener("error", () => {
-    audioError.textContent = `No se encontró el audio. Coloca tu archivo en "${cfg.audioFile}".`;
+    audioError.textContent = `No se encontró el audio. Coloca tu archivo en "${tracks[trackIndex]}".`;
     audioError.hidden = false;
     setPlayingUI(false);
   });
