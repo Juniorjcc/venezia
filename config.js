@@ -13,5 +13,5 @@ window.APP_CONFIG = {
   audioFiles: ["audio/musica.mp3", "audio/musica2.mp3"],
 
   // Volumen inicial (0 a 1)
-  initialVolume: 0.7,
+  initialVolume: 0.6,
 };
