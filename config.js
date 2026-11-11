@@ -18,12 +18,7 @@ window.APP_CONFIG = {
   slideshowSeconds: 5, // duración de cada foto en modo presentación
 
   // Puedes poner solo la ruta, o un objeto con descripción (caption) opcional.
-  photos: [
-    { src: "pictures/foto1.jpg", caption: "Nuestro primer paseo" },
-    { src: "pictures/foto2.jpg", caption: "Atardecer en ruta" },
-    "pictures/foto3.jpg",
-    "pictures/foto4.jpg",
-  ],
+  photos: Array.from({ length: 16 }, (_, i) => `Pictures/Imagen${i + 1}.jpg`),
 
   // Volumen inicial (0 a 1)
   initialVolume: 0.6,
