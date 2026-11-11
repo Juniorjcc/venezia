@@ -12,6 +12,19 @@ window.APP_CONFIG = {
   // El botón "siguiente" avanza por la lista y, tras la última, vuelve a la primera.
   audioFiles: ["audio/musica.mp3", "audio/musica2.mp3", "audio/musica3.mp3"],
 
+    // ----- Galería de fotos (carpeta "pictures") -----
+  galleryTitle: "Nuestros momentos",
+  gallerySubtitle: "Cada foto, un kilómetro de historia",
+  slideshowSeconds: 5, // duración de cada foto en modo presentación
+
+  // Puedes poner solo la ruta, o un objeto con descripción (caption) opcional.
+  photos: [
+    { src: "pictures/foto1.jpg", caption: "Nuestro primer paseo" },
+    { src: "pictures/foto2.jpg", caption: "Atardecer en ruta" },
+    "pictures/foto3.jpg",
+    "pictures/foto4.jpg",
+  ],
+
   // Volumen inicial (0 a 1)
   initialVolume: 0.6,
 };

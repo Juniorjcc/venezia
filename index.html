@@ -285,6 +285,56 @@
   </section>
   </div>
 
+   <!-- ============ GALERÍA DE FOTOS ============ -->
+  <button type="button" id="gallery-btn" class="gallery-btn" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#d4202f" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    <span>Nuestra galería</span>
+  </button>
+
+  <div id="gallery" class="gallery" role="dialog" aria-modal="true" aria-label="Galería de fotos" aria-hidden="true">
+    <div class="g-bg" id="g-bg"></div>
+
+    <header class="g-head">
+      <div>
+        <p class="g-kicker">Venezia</p>
+        <h2 class="g-title" id="g-title"></h2>
+        <p class="g-sub" id="g-sub"></p>
+      </div>
+      <div class="g-tools">
+        <button type="button" id="g-play" class="g-ico" aria-label="Iniciar presentación">
+          <svg class="fill ico-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="fill ico-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <button type="button" id="g-full" class="g-ico" aria-label="Pantalla completa">
+          <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        </button>
+        <button type="button" id="g-close" class="g-ico" aria-label="Cerrar galería">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="g-stage" id="g-stage">
+      <button type="button" id="g-prev" class="g-nav g-prev" aria-label="Foto anterior">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <figure class="g-figure">
+        <img id="g-img" class="g-img" alt="" draggable="false" />
+        <figcaption id="g-caption" class="g-caption"></figcaption>
+      </figure>
+      <button type="button" id="g-next" class="g-nav g-next" aria-label="Foto siguiente">
+        <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="g-progress"><i id="g-bar"></i></div>
+
+    <footer class="g-foot">
+      <span class="g-count" id="g-count"></span>
+      <div class="g-thumbs" id="g-thumbs"></div>
+    </footer>
+  </div> 
+
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>

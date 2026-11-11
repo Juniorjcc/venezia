@@ -400,4 +400,139 @@
   bikeEl.addEventListener("animationend", (e) => {
     if (e.animationName === "morph") bikeEl.classList.remove("morph");
   });
+
+  // ---------- Galería de fotos ----------
+  // Es una capa superpuesta: el <audio> y la escena siguen funcionando detrás.
+  const gallery = $("gallery");
+  const gImg = $("g-img");
+  const gBg = $("g-bg");
+  const gCaption = $("g-caption");
+  const gCount = $("g-count");
+  const gThumbs = $("g-thumbs");
+  const gBar = $("g-bar");
+  const gStage = $("g-stage");
+  const photos = (cfg.photos || []).map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
+  let gi = 0;
+  let gPlaying = false;
+  let gToken = 0;
+  let lastFocus = null;
+
+  $("g-title").textContent = cfg.galleryTitle || "Galería";
+  $("g-sub").textContent = cfg.gallerySubtitle || "";
+  gallery.style.setProperty("--g-dur", (cfg.slideshowSeconds || 5) + "s");
+
+  // miniaturas
+  const thumbEls = photos.map((p, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "g-thumb";
+    b.setAttribute("aria-label", `Ver foto ${i + 1}`);
+    const im = new Image();
+    im.src = p.src;
+    im.alt = "";
+    im.loading = "lazy";
+    im.decoding = "async";
+    b.appendChild(im);
+    b.addEventListener("click", () => show(i, i > gi ? 1 : -1));
+    gThumbs.appendChild(b);
+    return b;
+  });
+
+  function restartBar() {
+    gBar.style.animation = "none";
+    void gBar.offsetWidth; // reinicia la animación
+    gBar.style.animation = "";
+  }
+
+  function show(i, dir = 1) {
+    if (!photos.length) {
+      gCaption.textContent = "Aún no hay fotos. Agrégalas en config.js (photos).";
+      gImg.removeAttribute("src");
+      gImg.style.display = "none";
+      return;
+    }
+    gi = (i + photos.length) % photos.length;
+    const p = photos[gi];
+    const my = ++gToken; // evita cruces si se pulsa muy rápido
+    gImg.classList.add(dir > 0 ? "out-left" : "out-right");
+
+    const pre = new Image();
+    pre.onload = pre.onerror = () => {
+      setTimeout(() => {
+        if (my !== gToken) return;
+        gImg.src = p.src;
+        gImg.alt = p.caption || `Foto ${gi + 1}`;
+        gBg.style.backgroundImage = `url("${p.src}")`;
+        gCaption.textContent = p.caption || "";
+        gImg.classList.remove("out-left", "out-right");
+      }, 200);
+    };
+    pre.src = p.src;
+
+    gCount.textContent = `${gi + 1} / ${photos.length}`;
+    thumbEls.forEach((t, k) => t.classList.toggle("active", k === gi));
+    thumbEls[gi].scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    // precarga la siguiente y la anterior para que el paso sea instantáneo
+    [gi + 1, gi - 1].forEach((k) => { new Image().src = photos[(k + photos.length) % photos.length].src; });
+    if (gPlaying) restartBar();
+  }
+
+  function setPlaying(on) {
+    gPlaying = on;
+    gallery.classList.toggle("playing", on);
+    $("g-play").setAttribute("aria-label", on ? "Pausar presentación" : "Iniciar presentación");
+    if (on) restartBar();
+  }
+  // cuando termina la barra, avanza a la siguiente foto
+  gBar.addEventListener("animationend", () => { if (gPlaying) show(gi + 1, 1); });
+
+  function openGallery() {
+    lastFocus = document.activeElement;
+    gallery.classList.add("open");
+    gallery.setAttribute("aria-hidden", "false");
+    show(gi, 1);
+    $("g-close").focus();
+  }
+  function closeGallery() {
+    setPlaying(false);
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    gallery.classList.remove("open");
+    gallery.setAttribute("aria-hidden", "true");
+    lastFocus?.focus?.();
+  }
+
+  $("gallery-btn").addEventListener("click", openGallery);
+  $("g-close").addEventListener("click", closeGallery);
+  $("g-next").addEventListener("click", () => show(gi + 1, 1));
+  $("g-prev").addEventListener("click", () => show(gi - 1, -1));
+  $("g-play").addEventListener("click", () => setPlaying(!gPlaying));
+
+  const fullBtn = $("g-full");
+  if (!gallery.requestFullscreen) fullBtn.hidden = true; // p. ej. iPhone no lo permite
+  fullBtn.addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else gallery.requestFullscreen().catch(() => {});
+  });
+
+  // teclado: ← → navegan, espacio = presentación, Esc = cerrar
+  document.addEventListener("keydown", (e) => {
+    if (!gallery.classList.contains("open")) return;
+    if (e.key === "Escape") closeGallery();
+    else if (e.key === "ArrowRight") show(gi + 1, 1);
+    else if (e.key === "ArrowLeft") show(gi - 1, -1);
+    else if (e.key === " " && !e.target.closest("button")) { e.preventDefault(); setPlaying(!gPlaying); }
+  });
+
+  // gesto de deslizar en el móvil
+  let touchX = null;
+  gStage.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  gStage.addEventListener("touchend", (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) > 50) show(gi + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  });
+
 })();
+
+
